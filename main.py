@@ -93,6 +93,9 @@ def save_data():
 
 def open_file():
     nickname = entry_nickname.get()
+    if not nickname:
+        messagebox.showerror("Ошибка", f"Укажите ник.")
+        return
     try:
         os.startfile(f"roles_times_{nickname}.txt")
     except Exception as e:
