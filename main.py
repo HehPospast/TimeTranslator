@@ -96,6 +96,13 @@ def convert_time_to_minutes(hours, minutes):
     return int(hours) * 60 + int(minutes)
 
 
+# Функция для конвертации минут в часы и минуты
+def convert_minutes_to_time(total_minutes):
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+    return hours, minutes
+
+
 # Функция для сохранения данных в файл
 def save_data():
     nickname = entry_nickname.get()
@@ -126,6 +133,39 @@ def open_file():
         os.startfile(f"roles_times_{nickname}.txt")
     except Exception as e:
         messagebox.showerror("Ошибка", f"Не удалось открыть файл: {e}")
+
+# Функция для загрузки данных из файла
+def load_data():
+    nickname = entry_nickname.get()
+    if not nickname:
+        messagebox.showwarning("Предупреждение", "Введите ник.")
+        return
+
+    # Очищение всех полей перед загрузкой данных
+    for entries in role_entries.values():
+        entries['hours'].delete(0, tk.END)
+        entries['minutes'].delete(0, tk.END)
+
+    try:
+        with open(f"roles_times_{nickname}.txt", "r", encoding="utf-8") as file:
+            for line in file:
+                parts = line.strip().split()
+                if len(parts) == 4 and parts[0] == "playtime_addrole":
+                    role_key = parts[2]
+                    total_minutes = int(parts[3])
+                    hours, minutes = convert_minutes_to_time(total_minutes)
+
+                    if role_key in role_entries:
+                        role_entries[role_key]['hours'].delete(0, tk.END)
+                        role_entries[role_key]['hours'].insert(0, str(hours))
+                        role_entries[role_key]['minutes'].delete(0, tk.END)
+                        role_entries[role_key]['minutes'].insert(0, str(minutes))
+
+        messagebox.showinfo("Успех", "Данные успешно загружены из файла.")
+    except FileNotFoundError:
+        messagebox.showerror("Ошибка", f"Файл roles_times_{nickname}.txt не найден.")
+    except Exception as e:
+        messagebox.showerror("Ошибка", f"Не удалось загрузить данные: {e}")
 
 
 # Создание главного окна
@@ -181,6 +221,10 @@ for dept_key, dept_roles in departments.items():
 # Кнопка для сохранения данных
 btn_save = tk.Button(root, text="Сохранить", command=save_data)
 btn_save.pack(pady=10)
+
+# Кнопка для загрузки данных из файла
+btn_load = tk.Button(root, text="Загрузить из файла", command=load_data)
+btn_load.pack(pady=10)
 
 # Кнопка для открытия файла
 btn_open = tk.Button(root, text="Открыть файл с командами", command=open_file)
