@@ -1,68 +1,93 @@
 import os
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox
 
-# Список ролей и их названия
-roles = {
-    "JobMagistrat": "магистрат",
-    "JobSeniorResearcher": 'ведущий учёный',
-    "JobBorg": "киборг",
-    "JobCentralCommandPCK": "Представитель Центком",
-    "JobCentralCommandHOCK": "Начальник Штаба Центкома",
-    "JobCentralCommandIntern": "Ассистент Центкома",
-    "JobCentralCommandOperator": "Оператор Центкома",
-    "JobCentralCommandSecurity": "Офицер Специальной Службы Безопасности (ОССБ)",
-    "JobSeniorEngineer": "ведущий инженер",
-    "JobSeniorPhysician": "ведущий врач",
-    "JobSeniorOfficer": "инструктор СБ",
-    "JobAtmosphericTechnician": "атмосферный техник",
-    "JobBartender": "бармен",
-    "JobBotanist": "ботаник",
-    "JobCaptain": "капитан",
-    "JobCargoTechnician": "грузчик",
-    "JobChaplain": "священник",
-    "JobChef": "шеф-повар",
-    "JobChemist": "химик",
-    "JobChiefEngineer": "старший инженер",
-    "JobChiefMedicalOfficer": "главный врач",
-    "JobClown": "клоун",
-    "JobDetective": "детектив",
-    "JobERTEngineer": "инженер ОБР",
-    "JobBrigmedic": "бригмедик",
-    "JobERTJanitor": "уборщик ОБР",
-    "JobERTLeader": "лидер ОБР",
-    "JobERTMedical": "медик ОБР",
-    "JobERTSecurity": "офицер безопасности ОБР",
-    "JobHeadOfPersonnel": "глава персонала",
-    "JobHeadOfSecurity": "глава службы безопасности",
-    "JobJanitor": "уборщик",
-    "JobLawyer": "юрист",
-    "JobLibrarian": "библиотекарь",
-    "JobMedicalDoctor": "врач",
-    "JobMedicalIntern": "интерн",
-    "JobMime": "мим",
-    "JobMusician": "музыкант",
-    "JobPassenger": "пассажир",
-    "JobParamedic": "парамедик",
-    "JobPsychologist": "психолог",
-    "JobQuartermaster": "квартирмейстер",
-    "JobReporter": "репортёр",
-    "JobBlueshield": "офицер Синий Щит",
-    "JobResearchDirector": "научный руководитель",
-    "JobResearchAssistant": "научный ассистент",
-    "JobSalvageSpecialist": "утилизатор",
-    "JobScientist": "учёный",
-    "JobSecurityCadet": "кадет СБ",
-    "JobSecurityOfficer": "офицер СБ",
-    "JobServiceWorker": "сервисный работник",
-    "JobStationEngineer": "инженер",
-    "JobTechnicalAssistant": "технический ассистент",
-    "JobWarden": "смотритель",
-    "JobBoxer": "боксёр",
-    "JobZookeeper": "зоотехник",
-    "JobInvestigator": "следователь",
-    "JobNanotrasenRepresentive": "представитель NanoTrasen",
-    "JobIAA": "Агент внутренних дел"
+# Список ролей и их названия, сгруппированные по отделам
+departments = {
+    "Командование": {
+        "JobHeadOfPersonnel": "Глава Персонала",
+        "JobCaptain": "Капитан",
+        "JobNanotrasenRepresentive": "Представитель NanoTrasen",
+        "JobHeadOfSecurity": "Глава Службы Безопасности",
+        "JobChiefMedicalOfficer": "Главный врач",
+        "JobQuartermaster": "Квартирмейстер",
+        "JobResearchDirector": "Научный Руководитель",
+        "JobChiefEngineer": "Старший Инженер",
+        "JobMagistrat": "Магистрат",
+        "JobBlueshield": "Офицер 'Синий Щит'"
+    },
+    "Служба безопасности": {
+        "JobHeadOfSecurity": "Глава Службы Безопасности",
+        "JobBrigmedic": "Бригмедик",
+        "JobDetective": "Детектив",
+        "JobSeniorOfficer": "Инструктор СБ",
+        "JobSecurityCadet": "Кадет СБ",
+        "JobSecurityOfficer": "Офицер СБ",
+        "JobInvestigator": "Следователь",
+        "JobWarden": "Смотритель"
+    },
+    "Инженерный отдел": {
+        "JobChiefEngineer": "Старший Инженер",
+        "JobAtmosphericTechnician": "Атмосферный техник",
+        "JobSeniorEngineer": "Ведущий инженер",
+        "JobStationEngineer": "Инженер",
+        "JobTechnicalAssistant": "Технический Ассистент"
+    },
+    "Медицинский отдел": {
+        "JobChiefMedicalOfficer": "Главный врач",
+        "JobSeniorPhysician": "Ведущий врач",
+        "JobMedicalDoctor": "Врач",
+        "JobMedicalIntern": "Интерн",
+        "JobParamedic": "Парамедик",
+        "JobBrigmedic": "Патологоанатом",
+        "JobPsychologist": "Психолог",
+        "JobChemist": "Химик"
+    },
+    "Отдел снабжения": {
+        "JobQuartermaster": "Квартирмейстер",
+        "JobCargoTechnician": "Грузчик",
+        "JobSalvageSpecialist": "Утилизатор"
+    },
+    "Научный отдел": {
+        "JobResearchDirector": "Научный Руководитель",
+        "JobSeniorResearcher": "Ведущий учёный",
+        "JobScientist": "Учёный",
+        "JobResearchAssistant": "Научный ассистент"
+    },
+    "Юридический отдел":{
+        "JobIAA": "Агент внутренних дел",
+        "JobLawyer": "Юрист",
+    },
+    "Сервисный отдел": {
+        "JobBartender": "Бармен",
+        "JobBotanist": "Ботаник",
+        "JobChef": "Шеф-повар",
+        "JobClown": "Клоун",
+        "JobChaplain": "Священник",
+        "JobJanitor": "Уборщик",
+        "JobLibrarian": "Библиотекарь",
+        "JobMime": "Мим",
+        "JobMusician": "Музыкант",
+        "JobPassenger": "Пассажир",
+        "JobReporter": "Репортёр",
+        "JobBoxer": "Боксёр",
+        "JobZookeeper": "Зоотехник",
+        "JobServiceWorker": "Сервисный работник"
+    },
+    "ОБР": {
+        "JobERTEngineer": "Инженер ОБР",
+        "JobERTJanitor": "Уборщик ОБР",
+        "JobERTLeader": "Лидер ОБР",
+        "JobERTMedical": "Медик ОБР",
+        "JobERTSecurity": "Офицер безопасности ОБР"
+    },
+    "Центральное Командование": {
+        "JobCentralCommandPCK": "Представитель Центком",
+        "JobCentralCommandHOCK": "Начальник Штаба Центкома",
+        "JobCentralCommandIntern": "Ассистент Центкома",
+        "JobCentralCommandOperator": "Оператор Центкома",
+        "JobCentralCommandSecurity": "Офицер Специальной Службы Безопасности (ОССБ)"
+    },
 }
 
 
@@ -79,14 +104,15 @@ def save_data():
         return
 
     with open(f"roles_times_{nickname}.txt", "w", encoding="utf-8") as file:
-        for role_key, role_name in roles.items():
-            hours = role_entries[role_key]['hours'].get()
-            minutes = role_entries[role_key]['minutes'].get()
+        for dept_key, dept_roles in departments.items():
+            for role_key, role_name in dept_roles.items():
+                hours = role_entries[role_key]['hours'].get()
+                minutes = role_entries[role_key]['minutes'].get()
 
-            # Проверка, что поля не пустые и содержат числовые значения
-            if hours.isdigit() and minutes.isdigit():
-                total_minutes = convert_time_to_minutes(hours, minutes)
-                file.write(f"playtime_addrole {nickname} {role_key} {total_minutes}\n")
+                # Проверка, что поля не пустые и содержат числовые значения
+                if hours.isdigit() and minutes.isdigit():
+                    total_minutes = convert_time_to_minutes(hours, minutes)
+                    file.write(f"playtime_addrole {nickname} {role_key} {total_minutes}\n")
 
     messagebox.showinfo("Успех", "Данные успешно сохранены в файл.")
 
@@ -94,7 +120,7 @@ def save_data():
 def open_file():
     nickname = entry_nickname.get()
     if not nickname:
-        messagebox.showerror("Ошибка", f"Укажите ник.")
+        messagebox.showerror("Ошибка", "Укажите ник.")
         return
     try:
         os.startfile(f"roles_times_{nickname}.txt")
@@ -134,19 +160,23 @@ def on_frame_configure(canvas):
 role_entries = {}
 
 # Создание полей ввода для каждой роли
-for role_key, role_name in roles.items():
-    frame_role = tk.Frame(frame_roles)
-    frame_role.pack(fill=tk.X, pady=2)
+for dept_key, dept_roles in departments.items():
+    # Добавление заголовка отдела
+    tk.Label(frame_roles, text=dept_key, font=("Helvetica", 14, "bold")).pack(fill=tk.X, pady=5)
 
-    tk.Label(frame_role, text=role_name, width=30, anchor=tk.W).pack(side=tk.LEFT)
-    entry_hours = tk.Entry(frame_role, width=5)
-    entry_hours.pack(side=tk.LEFT)
-    tk.Label(frame_role, text="ч").pack(side=tk.LEFT)
-    entry_minutes = tk.Entry(frame_role, width=5)
-    entry_minutes.pack(side=tk.LEFT)
-    tk.Label(frame_role, text="мин").pack(side=tk.LEFT)
+    for role_key, role_name in dept_roles.items():
+        frame_role = tk.Frame(frame_roles)
+        frame_role.pack(fill=tk.X, pady=2)
 
-    role_entries[role_key] = {'hours': entry_hours, 'minutes': entry_minutes}
+        tk.Label(frame_role, text=role_name, width=30, anchor=tk.W).pack(side=tk.LEFT)
+        entry_hours = tk.Entry(frame_role, width=5)
+        entry_hours.pack(side=tk.LEFT)
+        tk.Label(frame_role, text="ч").pack(side=tk.LEFT)
+        entry_minutes = tk.Entry(frame_role, width=5)
+        entry_minutes.pack(side=tk.LEFT)
+        tk.Label(frame_role, text="мин").pack(side=tk.LEFT)
+
+        role_entries[role_key] = {'hours': entry_hours, 'minutes': entry_minutes}
 
 # Кнопка для сохранения данных
 btn_save = tk.Button(root, text="Сохранить", command=save_data)
