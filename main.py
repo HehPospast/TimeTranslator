@@ -7,6 +7,7 @@ import subprocess
 # Constants
 REPO_OWNER = "HehPospast"
 REPO_NAME = "TimeTranslator"
+BRANCH_NAME = "main"
 FILE_PATH = "main.py"
 GITHUB_API_URL = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/commits?path={FILE_PATH}"
 
@@ -47,7 +48,7 @@ def check_for_updates():
 
 def update_script():
     try:
-        response = requests.get(f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/main/{FILE_PATH}")
+        response = requests.get(f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/{BRANCH_NAME}/{FILE_PATH}")
         response.raise_for_status()
 
         with open(FILE_PATH, "w", encoding="utf-8") as file:
