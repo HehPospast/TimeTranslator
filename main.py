@@ -70,6 +70,7 @@ def prompt_update():
             update_script()
 
 # Список ролей и их названия, сгруппированные по отделам
+# fixme фильтр на командование, а то брух
 departments = {
     "Командование": {
         "JobHeadOfPersonnel": "Глава Персонала",
@@ -84,7 +85,6 @@ departments = {
         "JobBlueshield": "Офицер 'Синий Щит'"
     },
     "Служба безопасности": {
-        "JobHeadOfSecurity": "Глава Службы Безопасности",
         "JobBrigmedic": "Бригмедик",
         "JobDetective": "Детектив",
         "JobSeniorOfficer": "Инструктор СБ",
@@ -94,29 +94,25 @@ departments = {
         "JobWarden": "Смотритель"
     },
     "Инженерный отдел": {
-        "JobChiefEngineer": "Старший Инженер",
         "JobAtmosphericTechnician": "Атмосферный техник",
         "JobSeniorEngineer": "Ведущий инженер",
         "JobStationEngineer": "Инженер",
         "JobTechnicalAssistant": "Технический Ассистент"
     },
     "Медицинский отдел": {
-        "JobChiefMedicalOfficer": "Главный врач",
         "JobSeniorPhysician": "Ведущий врач",
         "JobMedicalDoctor": "Врач",
         "JobMedicalIntern": "Интерн",
         "JobParamedic": "Парамедик",
-        "JobBrigmedic": "Патологоанатом",
+        # "JobBrigmedic": "Патологоанатом",
         "JobPsychologist": "Психолог",
         "JobChemist": "Химик"
     },
     "Отдел снабжения": {
-        "JobQuartermaster": "Квартирмейстер",
         "JobCargoTechnician": "Грузчик",
         "JobSalvageSpecialist": "Утилизатор"
     },
     "Научный отдел": {
-        "JobResearchDirector": "Научный Руководитель",
         "JobSeniorResearcher": "Ведущий учёный",
         "JobScientist": "Учёный",
         "JobResearchAssistant": "Научный ассистент"
@@ -171,7 +167,6 @@ def convert_minutes_to_time(total_minutes):
 
 
 # Функция для сохранения данных в файл
-# Функция для сохранения данных в файл
 def save_data():
     nickname = entry_nickname.get()
     if not nickname:
@@ -199,6 +194,7 @@ def save_data():
         file.write(f"playtime_addoverall {nickname} {total_playtime}\n")
 
     messagebox.showinfo("Успех", "Данные успешно сохранены в файл.")
+
 
 def open_file():
     nickname = entry_nickname.get()
