@@ -171,6 +171,7 @@ def convert_minutes_to_time(total_minutes):
 
 
 # Функция для сохранения данных в файл
+# Функция для сохранения данных в файл
 def save_data():
     nickname = entry_nickname.get()
     if not nickname:
@@ -178,6 +179,7 @@ def save_data():
         return
 
     unique_entries = {}
+    total_playtime = 0
 
     for dept_key, dept_roles in departments.items():
         for role_key, role_name in dept_roles.items():
@@ -189,13 +191,14 @@ def save_data():
                 total_minutes = convert_time_to_minutes(hours, minutes)
                 if role_key not in unique_entries:
                     unique_entries[role_key] = total_minutes
+                total_playtime += total_minutes
 
     with open(f"roles_times_{nickname}.txt", "w", encoding="utf-8") as file:
         for role_key, total_minutes in unique_entries.items():
             file.write(f"playtime_addrole {nickname} {role_key} {total_minutes}\n")
+        file.write(f"playtime_addoverall {nickname} {total_playtime}\n")
 
     messagebox.showinfo("Успех", "Данные успешно сохранены в файл.")
-
 
 def open_file():
     nickname = entry_nickname.get()
