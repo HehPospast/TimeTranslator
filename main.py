@@ -1,6 +1,73 @@
 import os
 import tkinter as tk
 from tkinter import messagebox
+import requests
+import subprocess
+
+# Constants
+REPO_OWNER = "HehPospast"
+REPO_NAME = "TimeTranslator"
+FILE_PATH = "main.py"
+GITHUB_API_URL = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/commits?path={FILE_PATH}"
+
+
+def fetch_latest_commit():
+    try:
+        response = requests.get(GITHUB_API_URL)
+        response.raise_for_status()
+        commits = response.json()
+        if commits:
+            return commits[0]['sha']
+        return None
+    except requests.RequestException as e:
+        print(f"Error fetching commits: {e}")
+        return None
+
+
+def check_for_updates():
+    latest_commit = fetch_latest_commit()
+    if not latest_commit:
+        return False
+
+    if not os.path.exists(".commit"):
+        return True
+
+    with open(".commit", "r") as file:
+        local_commit = file.read().strip()
+
+    return local_commit != latest_commit
+
+def delete_commit_file():
+    try:
+        if os.path.exists(".commit"):
+            os.remove(".commit")
+            print(".commit file deleted")
+    except Exception as e:
+        print(f"Error deleting .commit file: {e}")
+
+def update_script():
+    try:
+        response = requests.get(f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/main/{FILE_PATH}")
+        response.raise_for_status()
+
+        with open(FILE_PATH, "w", encoding="utf-8") as file:
+            file.write(response.text)
+
+        latest_commit = fetch_latest_commit()
+        if latest_commit:
+            with open(".commit", "w", encoding="utf-8") as file:
+                file.write(latest_commit)
+
+        delete_commit_file()
+        messagebox.showinfo("Успех", "Скрипт обновлён. Пожалуйста, перезапустите программу.")
+        root.quit()
+    except requests.RequestException as e:
+        messagebox.showerror("Ошибка", f"Не удалось обновить скрипт: {e}")
+
+def prompt_update():
+    if check_for_updates():
+        if messagebox.askyesno("Обновление доступно", "Доступно новое обновление. Обновить сейчас?"):
+            update_script()
 
 # Список ролей и их названия, сгруппированные по отделам
 departments = {
@@ -171,6 +238,12 @@ def load_data():
 # Создание главного окна
 root = tk.Tk()
 root.title("Учет времени ролей")
+
+
+# Автоапдейт
+# fixme OFF FOR DEBUG
+prompt_update()
+
 
 # Поле для ввода ника
 frame_nickname = tk.Frame(root)
