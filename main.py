@@ -177,19 +177,24 @@ def save_data():
         messagebox.showwarning("Предупреждение", "Введите ник.")
         return
 
-    with open(f"roles_times_{nickname}.txt", "w", encoding="utf-8") as file:
-        for dept_key, dept_roles in departments.items():
-            for role_key, role_name in dept_roles.items():
-                hours = role_entries[role_key]['hours'].get()
-                minutes = role_entries[role_key]['minutes'].get()
+    unique_entries = {}
 
-                # Проверка, что поля не пустые и содержат числовые значения
-                if hours.isdigit() and minutes.isdigit():
-                    total_minutes = convert_time_to_minutes(hours, minutes)
-                    file.write(f"playtime_addrole {nickname} {role_key} {total_minutes}\n")
+    for dept_key, dept_roles in departments.items():
+        for role_key, role_name in dept_roles.items():
+            hours = role_entries[role_key]['hours'].get()
+            minutes = role_entries[role_key]['minutes'].get()
+
+            # Проверка, что поля не пустые и содержат числовые значения
+            if hours.isdigit() and minutes.isdigit():
+                total_minutes = convert_time_to_minutes(hours, minutes)
+                if role_key not in unique_entries:
+                    unique_entries[role_key] = total_minutes
+
+    with open(f"roles_times_{nickname}.txt", "w", encoding="utf-8") as file:
+        for role_key, total_minutes in unique_entries.items():
+            file.write(f"playtime_addrole {nickname} {role_key} {total_minutes}\n")
 
     messagebox.showinfo("Успех", "Данные успешно сохранены в файл.")
-
 
 def open_file():
     nickname = entry_nickname.get()
@@ -242,7 +247,7 @@ root.title("Учет времени ролей")
 
 # Автоапдейт
 # fixme OFF FOR DEBUG
-prompt_update()
+# prompt_update()
 
 
 # Поле для ввода ника
