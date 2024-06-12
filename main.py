@@ -2,7 +2,6 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 import requests
-import subprocess
 
 # Constants
 REPO_OWNER = "HehPospast"
