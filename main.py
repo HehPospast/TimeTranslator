@@ -37,13 +37,13 @@ def check_for_updates():
 
     return local_commit != latest_commit
 
-def delete_commit_file():
-    try:
-        if os.path.exists(".commit"):
-            os.remove(".commit")
-            print(".commit file deleted")
-    except Exception as e:
-        print(f"Error deleting .commit file: {e}")
+# def delete_commit_file():
+#     try:
+#         if os.path.exists(".commit"):
+#             os.remove(".commit")
+#             print(".commit file deleted")
+#     except Exception as e:
+#         print(f"Error deleting .commit file: {e}")
 
 def update_script():
     try:
@@ -58,7 +58,7 @@ def update_script():
             with open(".commit", "w", encoding="utf-8") as file:
                 file.write(latest_commit)
 
-        delete_commit_file()
+        # delete_commit_file()
         messagebox.showinfo("Успех", "Скрипт обновлён. Пожалуйста, перезапустите программу.")
         root.quit()
     except requests.RequestException as e:
