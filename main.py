@@ -191,7 +191,7 @@ def save_data():
     with open(f"roles_times_{nickname}.txt", "w", encoding="utf-8") as file:
         for role_key, total_minutes in unique_entries.items():
             file.write(f"playtime_addrole {nickname} {role_key} {total_minutes}\n")
-        file.write(f"playtime_addoverall {nickname} {total_playtime}\n")
+        file.write(f"playtime_addoverall {nickname} {total_playtime}\n  # ДОБАВЛЕНИЕ ОБЩЕГО ВРЕМЕНИ, НЕ РОЛЬ")
 
     messagebox.showinfo("Успех", "Данные успешно сохранены в файл.")
 
