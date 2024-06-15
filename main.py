@@ -53,13 +53,12 @@ def update_script():
         with open(FILE_PATH, "w", encoding="utf-8") as file:
             file.write(response.text)
 
-        latest_commit = fetch_latest_commit()
-        if latest_commit:
+        latest_commit_sha, latest_commit_message = fetch_latest_commit()
+        if latest_commit_sha:
             with open(".commit", "w", encoding="utf-8") as file:
-                file.write(latest_commit)
+                file.write(latest_commit_sha)
 
-        # delete_commit_file()
-        messagebox.showinfo("Успех", "Скрипт обновлён. Пожалуйста, перезапустите программу.")
+        messagebox.showinfo("Успех", f"Скрипт успешно обновлён до коммита:\n\n{latest_commit_message}")
         root.quit()
     except requests.RequestException as e:
         messagebox.showerror("Ошибка", f"Не удалось обновить скрипт: {e}")
@@ -191,10 +190,65 @@ def save_data():
     with open(f"roles_times_{nickname}.txt", "w", encoding="utf-8") as file:
         for role_key, total_minutes in unique_entries.items():
             file.write(f"playtime_addrole {nickname} {role_key} {total_minutes}\n")
-        file.write(f"playtime_addoverall {nickname} {total_playtime}  # ДОБАВЛЕНИЕ ОБЩЕГО ВРЕМЕНИ, НЕ РОЛЬ!\n")
+        file.write(f"playtime_addoverall {nickname} {total_playtime}\n")
 
     messagebox.showinfo("Успех", "Данные успешно сохранены в файл.")
 
+# Автоматизация
+def save_data_to_appdata():
+    nickname = entry_nickname.get()
+    if not nickname:
+        messagebox.showwarning("Предупреждение", "Введите ник.")
+        return
+
+    unique_entries = {}
+    total_playtime = 0
+
+    for dept_key, dept_roles in departments.items():
+        for role_key, role_name in dept_roles.items():
+            hours = role_entries[role_key]['hours'].get()
+            minutes = role_entries[role_key]['minutes'].get()
+
+            # Проверка, что поля не пустые и содержат числовые значения
+            if hours.isdigit() and minutes.isdigit():
+                total_minutes = convert_time_to_minutes(hours, minutes)
+                if role_key not in unique_entries:
+                    unique_entries[role_key] = total_minutes
+                total_playtime += total_minutes
+
+    special_path = os.path.join(os.getenv('APPDATA'), "Space Station 14", "data")
+    if not os.path.exists(special_path):
+        os.makedirs(special_path)
+
+    file_path = os.path.join(special_path, f"roles_times_{nickname}.txt")
+    with open(file_path, "w", encoding="utf-8") as file:
+        for role_key, total_minutes in unique_entries.items():
+            file.write(f"playtime_addrole {nickname} {role_key} {total_minutes}\n")
+        file.write(f"playtime_addoverall {nickname} {total_playtime}\n")
+
+    command = f"exec roles_times_{nickname}.txt"
+    show_command_window(command)
+
+
+# Функция для отображения окна с командой
+def show_command_window(command):
+    command_window = tk.Toplevel(root)
+    command_window.title("Команда для копирования")
+
+    tk.Label(command_window, text="Скопируйте и выполните команду(Проверьте файл перед этим :/ ):", padx=10, pady=10).pack()
+    command_entry = tk.Entry(command_window, width=50)
+    command_entry.pack(pady=5, padx=10)
+    command_entry.insert(0, command)
+
+    # Выделение текста в поле для упрощения копирования
+    command_entry.select_range(0, tk.END)
+    command_entry.icursor(tk.END)
+
+# Функция для запроса подтверждения
+def prompt_confirmation():
+    if messagebox.askyesno("Предупреждение", "Вы пытаетесь воспользоваться тестовой функцией, если вы ТОЧНО уверены в времени которое ввели нажмите Да"):
+        if messagebox.askyesno("Предупреждение", "Вы ТОЧНО уверены?"):
+            save_data_to_appdata()
 
 def open_file():
     nickname = entry_nickname.get()
@@ -203,6 +257,18 @@ def open_file():
         return
     try:
         os.startfile(f"roles_times_{nickname}.txt")
+    except Exception as e:
+        messagebox.showerror("Ошибка", f"Не удалось открыть файл: {e}")
+
+def open_file_appdata():
+    nickname = entry_nickname.get()
+    if not nickname:
+        messagebox.showerror("Ошибка", "Укажите ник.")
+        return
+    try:
+        path = os.path.join(os.getenv('APPDATA'), "Space Station 14", "data")
+        file_path = os.path.join(path, f"roles_times_{nickname}.txt")
+        os.startfile(file_path)
     except Exception as e:
         messagebox.showerror("Ошибка", f"Не удалось открыть файл: {e}")
 
@@ -306,6 +372,14 @@ btn_load.pack(pady=10)
 
 # Кнопка для открытия файла
 btn_open = tk.Button(root, text="Открыть файл с командами", command=open_file)
+btn_open.pack(pady=10)
+
+# Кнопка для сохранения с автовводом
+btn_open = tk.Button(root, text="Сохранить с автовводом", command=prompt_confirmation)
+btn_open.pack(pady=10)
+
+# Кнопка для открытия файла
+btn_open = tk.Button(root, text="Открыть файл автоввода", command=open_file_appdata)
 btn_open.pack(pady=10)
 
 root.mainloop()
