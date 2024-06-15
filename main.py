@@ -17,11 +17,13 @@ def fetch_latest_commit():
         response.raise_for_status()
         commits = response.json()
         if commits:
-            return commits[0]['sha']
-        return None
+            latest_commit_sha = commits[0]['sha']
+            latest_commit_message = commits[0]['commit']['message']
+            return latest_commit_sha, latest_commit_message
+        return None, None
     except requests.RequestException as e:
         print(f"Error fetching commits: {e}")
-        return None
+        return None, None
 
 
 def check_for_updates():
