@@ -250,6 +250,7 @@ def prompt_confirmation():
         if messagebox.askyesno("Предупреждение", "Вы ТОЧНО уверены?"):
             save_data_to_appdata()
 
+
 def open_file():
     nickname = entry_nickname.get()
     if not nickname:
