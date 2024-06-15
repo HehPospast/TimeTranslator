@@ -27,8 +27,8 @@ def fetch_latest_commit():
 
 
 def check_for_updates():
-    latest_commit = fetch_latest_commit()
-    if not latest_commit:
+    latest_commit_sha, _ = fetch_latest_commit()
+    if not latest_commit_sha:
         return False
 
     if not os.path.exists(".commit"):
@@ -37,8 +37,7 @@ def check_for_updates():
     with open(".commit", "r") as file:
         local_commit = file.read().strip()
 
-    return local_commit != latest_commit
-
+    return local_commit != latest_commit_sha
 # def delete_commit_file():
 #     try:
 #         if os.path.exists(".commit"):
